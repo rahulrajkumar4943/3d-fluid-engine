@@ -53,8 +53,10 @@ class Renderer {
             const float scale = 1.0f;
 
             DrawCube({0, 0, 10}, 1, 1, 1, BLUE);   // +z marker // to make sure orientation is correct
+            DrawCubeWires({0, 0, 10}, 1, 1, 1, BLACK);
             DrawCube({0, 0, -10}, 1, 1, 1, RED);   // -z marker // blue should be at the right when looking at it from inlet
-            DrawCube({0, 0, 0}, 1, 1, 1, BLACK);   // 0 marker // black is in the middle origin point
+            DrawCubeWires({0, 0, -10}, 1, 1, 1, BLACK);
+            // DrawCube({0, 0, 0}, 1, 1, 1, BLACK);   // 0 marker // black is in the middle origin point 
 
 
             // draw domain, just the floor and the wall to the right of the car
@@ -76,7 +78,7 @@ class Renderer {
                 Vector3 d = {0, 0, sz};
 
                 DrawCube(
-                    {sx * 0.5f, -0.5 * config::FLOOR_THICKNESS, sz * 0.5f},
+                    {sx * 0.5f, -0.5 * config::FLOOR_THICKNESS, sz * 0.5f}, // offset by half of everything to account for thickness
                     sx, config::FLOOR_THICKNESS, sz, // thickness of 10cm (0.1m)
                     wallColor
                 );

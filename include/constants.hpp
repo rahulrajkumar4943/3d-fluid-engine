@@ -16,13 +16,13 @@ namespace config {
     // lbm parameters (only for math and physics)
     // world / domain size
     // in meters
-    constexpr float WORLD_LENGTH_X = 10.0f; // flow direction
-    constexpr float WORLD_HEIGHT_Y = 4.0f;
-    constexpr float WORLD_WIDTH_Z  = 4.0f;
+    constexpr float WORLD_LENGTH_X = 14.0f; // flow direction
+    constexpr float WORLD_HEIGHT_Y = 6.0f;
+    constexpr float WORLD_WIDTH_Z  = 6.0f;
     // in voxels
-    constexpr int LBM_WORLD_LENGTH_X = 100; // flow direction
-    constexpr int LBM_WORLD_HEIGHT_Y = 40;
-    constexpr int LBM_WORLD_WIDTH_Z  = 40;
+    constexpr int LBM_WORLD_LENGTH_X = 140; // flow direction
+    constexpr int LBM_WORLD_HEIGHT_Y = 60;
+    constexpr int LBM_WORLD_WIDTH_Z  = 60;
     // cell sizes
     constexpr float CELL_LENGTH_X = WORLD_LENGTH_X / LBM_WORLD_LENGTH_X; // flow direction
     constexpr float CELL_HEIGHT_Y = WORLD_HEIGHT_Y / LBM_WORLD_HEIGHT_Y;
