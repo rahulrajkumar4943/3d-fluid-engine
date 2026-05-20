@@ -56,8 +56,8 @@ int main() {
         if (now >= nextRenderTick) {
 
             renderer.handleEvents();
-            renderer.renderLBMVoxel(state);
-            // renderer.renderScene(state);
+            // renderer.renderLBMVoxel(state);
+            renderer.renderScene(state);
 
             nextRenderTick += renderInterval;
         }

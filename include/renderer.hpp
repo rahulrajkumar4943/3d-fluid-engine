@@ -34,6 +34,8 @@ class Renderer {
             running = !WindowShouldClose();
         }
 
+       
+
         // render hotpath (2 functions for the hotpath)
         // one for debugging and one for actual visuals
 
@@ -53,6 +55,58 @@ class Renderer {
             DrawCube({0, 0, 10}, 2, 2, 2, BLUE);   // +z marker // to make sure orientation is correct
             DrawCube({0, 0, -10}, 2, 2, 2, RED);   // -z marker // blue should be at the right when looking at it from inlet
 
+
+            // draw domain, just the floor and the wall to the right of the car
+
+            // sx sy sz are state dimensions
+            float sx = (float)state.nx;
+            float sy = (float)state.ny;
+            float sz = (float)state.nz;
+
+           
+            Color wallColor = DARKGRAY;
+            Color lineColor = BLACK;
+
+            // floor y = 0
+            {
+                Vector3 a = {0, 0, 0};
+                Vector3 b = {sx, 0, 0};
+                Vector3 c = {sx, 0, sz};
+                Vector3 d = {0, 0, sz};
+
+                DrawCube(
+                    {sx * 0.5f, -0.5f, sz * 0.5f},
+                    sx, 1.0f, sz,
+                    wallColor
+                );
+                DrawCubeWires(
+                    {sx * 0.5f, -0.5f, sz * 0.5f},
+                    sx, 1.0f, sz,
+                    lineColor
+                );
+
+
+            }
+
+            // wall to the right of car z = 0
+            {
+                Vector3 a = {0, 0, 0};
+                Vector3 b = {sx, 0, 0};
+                Vector3 c = {sx, sy, 0};
+                Vector3 d = {0, sy, 0};
+
+                DrawCube(
+                    {sx * 0.5f, sy * 0.5f, -0.5f},
+                    sx, sy, 1.0f,
+                    wallColor
+                );
+                DrawCubeWires(
+                    {sx * 0.5f, sy * 0.5f, -0.5f},
+                    sx, sy, 1.0f,
+                    lineColor
+                );
+
+            }
 
             EndMode3D();
 
