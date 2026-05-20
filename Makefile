@@ -1,20 +1,24 @@
-# compiler and flags
 CXX = g++
-CXXFLAGS = -Wall -Wextra -std=c++20
 
-# executable name
+RAYLIB_PATH = $(shell brew --prefix raylib)
+
+CXXFLAGS = -std=c++17 -O2 -Iinclude -I$(RAYLIB_PATH)/include
+
+LDFLAGS = -L$(RAYLIB_PATH)/lib \
+          -lraylib \
+          -framework OpenGL \
+          -framework Cocoa \
+          -framework IOKit \
+          -framework CoreVideo
+
+SRC = $(wildcard src/*.cpp)
 TARGET = engine
 
-# src directories
-SRC_DIR = src
-SRC = $(SRC_DIR)/main.cpp
+all:
+	$(CXX) $(CXXFLAGS) $(SRC) -o $(TARGET) $(LDFLAGS)
 
-# default build executable
-all: $(TARGET)
+run:
+	./$(TARGET)
 
-$(TARGET): $(SRC)
-	$(CXX) $(CXXFLAGS) $(SRC) -o $(TARGET)
-
-# clean
 clean:
 	rm -f $(TARGET)

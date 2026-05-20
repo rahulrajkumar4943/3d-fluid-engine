@@ -81,10 +81,10 @@ namespace lbm {
         static constexpr int Q = 19;
         static constexpr int Dimensions = 3;
 
-        // Lattice directions
+        // lattice directions
         // 0  = rest
-        // Axis directions 1 to 6
-        // Edge diagonals 7 to 18
+        // axis directions 1 to 6
+        // edge diagonals 7 to 18
 
 
         static inline constexpr std::array<Int3, Q> directions = {{
@@ -119,8 +119,7 @@ namespace lbm {
         }};
 
 
-        // Lattice weights
-        //
+        // lattice weights
         // rest      = 1/3
         // axis      = 1/18
         // diagonals = 1/36
@@ -152,18 +151,27 @@ namespace lbm {
 
         // opposite direction lookup
         static inline constexpr std::array<int, Q> opposite = {{
-             0,
+            0,
 
-             2,  1,
-             4,  3,
-             6,  5,
+            2,  
+            1,
+            4,  
+            3,
+            6,  
+            5,
 
-             8,  7,
-            10,  9,
-            12, 11,
-            14, 13,
-            16, 15,
-            18, 17
+            8,  
+            7,
+            10,  
+            9,
+            12, 
+            11,
+            14, 
+            13,
+            16, 
+            15,
+            18, 
+            17
         }};
     };
 
