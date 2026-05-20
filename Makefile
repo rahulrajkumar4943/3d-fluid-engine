@@ -2,7 +2,7 @@ CXX = g++
 
 RAYLIB_PATH = $(shell brew --prefix raylib)
 
-CXXFLAGS = -std=c++17 -O2 -Iinclude -I$(RAYLIB_PATH)/include
+CXXFLAGS = -std=c++20 -O2 -Iinclude -I$(RAYLIB_PATH)/include
 
 LDFLAGS = -L$(RAYLIB_PATH)/lib \
           -lraylib \
