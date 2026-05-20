@@ -77,7 +77,7 @@ class Renderer {
 
                 DrawCube(
                     {sx * 0.5f, -0.5 * config::FLOOR_THICKNESS, sz * 0.5f},
-                    sx, 0.1f, sz, // thickness of 10cm (0.1m)
+                    sx, config::FLOOR_THICKNESS, sz, // thickness of 10cm (0.1m)
                     wallColor
                 );
                 DrawCubeWires(
