@@ -52,16 +52,17 @@ class Renderer {
 
             const float scale = 1.0f;
 
-            DrawCube({0, 0, 10}, 2, 2, 2, BLUE);   // +z marker // to make sure orientation is correct
-            DrawCube({0, 0, -10}, 2, 2, 2, RED);   // -z marker // blue should be at the right when looking at it from inlet
+            DrawCube({0, 0, 10}, 1, 1, 1, BLUE);   // +z marker // to make sure orientation is correct
+            DrawCube({0, 0, -10}, 1, 1, 1, RED);   // -z marker // blue should be at the right when looking at it from inlet
+            DrawCube({0, 0, 0}, 1, 1, 1, BLACK);   // 0 marker // black is in the middle origin point
 
 
             // draw domain, just the floor and the wall to the right of the car
 
             // sx sy sz are state dimensions
-            float sx = (float)state.nx;
-            float sy = (float)state.ny;
-            float sz = (float)state.nz;
+            float sx = config::WORLD_LENGTH_X;
+            float sy = config::WORLD_HEIGHT_Y;
+            float sz = config::WORLD_WIDTH_Z;
 
            
             Color wallColor = DARKGRAY;
@@ -75,13 +76,13 @@ class Renderer {
                 Vector3 d = {0, 0, sz};
 
                 DrawCube(
-                    {sx * 0.5f, -0.5f, sz * 0.5f},
-                    sx, 1.0f, sz,
+                    {sx * 0.5f, -0.5 * config::FLOOR_THICKNESS, sz * 0.5f},
+                    sx, 0.1f, sz, // thickness of 10cm (0.1m)
                     wallColor
                 );
                 DrawCubeWires(
-                    {sx * 0.5f, -0.5f, sz * 0.5f},
-                    sx, 1.0f, sz,
+                    {sx * 0.5f, -0.5 * config::FLOOR_THICKNESS, sz * 0.5f},
+                    sx, config::FLOOR_THICKNESS, sz,
                     lineColor
                 );
 
@@ -96,13 +97,13 @@ class Renderer {
                 Vector3 d = {0, sy, 0};
 
                 DrawCube(
-                    {sx * 0.5f, sy * 0.5f, -0.5f},
-                    sx, sy, 1.0f,
+                    {sx * 0.5f, sy * 0.5f, -0.5 * config::WALL_THICKNESS},
+                    sx, sy, config::WALL_THICKNESS,
                     wallColor
                 );
                 DrawCubeWires(
-                    {sx * 0.5f, sy * 0.5f, -0.5f},
-                    sx, sy, 1.0f,
+                    {sx * 0.5f, sy * 0.5f, -0.5 * config::WALL_THICKNESS},
+                    sx, sy, config::WALL_THICKNESS,
                     lineColor
                 );
 
@@ -128,10 +129,13 @@ class Renderer {
 
             BeginMode3D(camera);
 
-            const float scale = 1.0f;
+            const float x_scale = config::CELL_LENGTH_X;
+            const float y_scale = config::CELL_HEIGHT_Y;
+            const float z_scale = config::CELL_WIDTH_Z;
 
-            DrawCube({0, 0, 10}, 2, 2, 2, BLUE);   // +z marker // to make sure orientation is correct
-            DrawCube({0, 0, -10}, 2, 2, 2, RED);   // -z marker // blue should be at the right when looking at it from inlet
+            // these numbers are in meters now
+            DrawCube({0, 0, 10}, 1, 1, 1, BLUE);   // +z marker // to make sure orientation is correct
+            DrawCube({0, 0, -10}, 1, 1, 1, RED);   // -z marker // blue should be at the right when looking at it from inlet
 
             // loop through all voxels to render, inefficient, only for debugging (O(n^3))
             for (int z = 0; z < state.nz; z++) {
@@ -144,13 +148,13 @@ class Renderer {
                         if (state.solid[idx] == 1) {
 
                             Vector3 pos = {
-                                x * scale,
-                                y * scale,
-                                z * scale
+                                (x + 0.5f) * x_scale, // shifted by 0.5 so its center aligned
+                                (y + 0.5f) * y_scale,
+                                (z + 0.5f) * z_scale
                             };
 
-                            DrawCube(pos, scale, scale, scale, DARKGRAY);
-                            DrawCubeWires(pos, scale, scale, scale, BLACK); // lines make it go from 28 to 6 fps
+                            DrawCube(pos, x_scale, y_scale, z_scale, DARKGRAY);
+                            DrawCubeWires(pos, x_scale, y_scale, z_scale, BLACK); // lines make it go from 28 to 6 fps
                         }
                     }
                 }

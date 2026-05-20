@@ -15,13 +15,25 @@ namespace config {
 
     // lbm parameters (only for math and physics)
     // world / domain size
-    constexpr int LBM_WORLD_LENGTH_X = 200; // flow direction
-    constexpr int LBM_WORLD_HEIGHT_Y = 80;
-    constexpr int LBM_WORLD_WIDTH_Z  = 80;
+    // in meters
+    constexpr float WORLD_LENGTH_X = 10.0f; // flow direction
+    constexpr float WORLD_HEIGHT_Y = 4.0f;
+    constexpr float WORLD_WIDTH_Z  = 4.0f;
+    // in voxels
+    constexpr int LBM_WORLD_LENGTH_X = 100; // flow direction
+    constexpr int LBM_WORLD_HEIGHT_Y = 40;
+    constexpr int LBM_WORLD_WIDTH_Z  = 40;
+    // cell sizes
+    constexpr float CELL_LENGTH_X = WORLD_LENGTH_X / LBM_WORLD_LENGTH_X; // flow direction
+    constexpr float CELL_HEIGHT_Y = WORLD_HEIGHT_Y / LBM_WORLD_HEIGHT_Y;
+    constexpr float CELL_WIDTH_Z  = WORLD_WIDTH_Z / LBM_WORLD_WIDTH_Z;
     // alias for lbm style code
     constexpr int NX = LBM_WORLD_LENGTH_X;
     constexpr int NY = LBM_WORLD_HEIGHT_Y;
     constexpr int NZ = LBM_WORLD_WIDTH_Z;
+    // floor and wall thickness
+    constexpr float FLOOR_THICKNESS = 0.1f;
+    constexpr float WALL_THICKNESS = 0.1f;
     // lbm parameters
     constexpr float TAU = 0.6f;   // relaxation time
     constexpr float DT  = 1.0f;   // lattice timestep
@@ -34,10 +46,10 @@ namespace config {
     // camera parameters
     constexpr float YAW = -90.0f;
     constexpr float PITCH = 0.0f;
-    constexpr float MOVE_SPEED = 1.5f;
+    constexpr float MOVE_SPEED = 0.5f;
     constexpr float MOUSE_SENS = 0.1f;
-    inline const Vector3 CAMERA_POSITION = {50.0f, 50.0f, 120.0f};
-    inline const Vector3 CAMERA_TARGET = { 50.0f, 20.0f, 0.0f };
+    inline const Vector3 CAMERA_POSITION = {-1.0f, 4.0f, 10.0f}; // in meters
+    inline const Vector3 CAMERA_TARGET = { 0.0f, 0.0f, 0.0f };
     inline const Vector3 CAMERA_UP = { 0.0f, 1.0f, 0.0f };
     constexpr float CAMERA_FOVY = 60.0f;
 
