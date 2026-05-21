@@ -4,9 +4,10 @@
 #include <cmath>
 #include <iostream>
 
-#include "simulation_state.hpp"
 #include "raylib.h"
 #include "raymath.h"
+
+#include "simulation_state.hpp"
 #include "constants.hpp"
 
 class Renderer {
@@ -48,6 +49,10 @@ class Renderer {
 
             carModel = LoadModel(path.c_str());
             carLoaded = true;
+        }
+
+        const Model& getModel() const {
+            return carModel;
         }
        
 

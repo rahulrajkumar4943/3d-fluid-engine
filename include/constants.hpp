@@ -19,7 +19,7 @@ namespace config {
     constexpr float WORLD_LENGTH_X = 14.0f; // flow direction
     constexpr float WORLD_HEIGHT_Y = 6.0f;
     constexpr float WORLD_WIDTH_Z  = 6.0f;
-    // in voxels
+    // in voxels aka resolution
     constexpr int LBM_WORLD_LENGTH_X = 140; // flow direction
     constexpr int LBM_WORLD_HEIGHT_Y = 60;
     constexpr int LBM_WORLD_WIDTH_Z  = 60;

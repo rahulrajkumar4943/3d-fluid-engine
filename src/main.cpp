@@ -45,9 +45,13 @@ int main() {
         return -1;
     }
 
-    std::cout << "BEFORE LOADING OBJECT" << std::endl;
+    // load the object
+    // std::cout << "BEFORE LOADING OBJECT" << std::endl;
     renderer.loadObject(state.object.stlPath);
-    std::cout << "AFTER LOADING OBJECT" << std::endl;
+    // std::cout << "AFTER LOADING OBJECT" << std::endl;
+
+    // voxelise the object for LBM
+    voxelizeObject(state, renderer.getModel());
 
     // hot path with fixed time
     auto nextEngineTick = simulation_clock::now();
@@ -74,8 +78,9 @@ int main() {
         if (now >= nextRenderTick) {
 
             renderer.handleEvents();
-            // renderer.renderLBMVoxel(state);
-            renderer.renderScene(state);
+
+            renderer.renderLBMVoxel(state);
+            // renderer.renderScene(state);
 
             nextRenderTick += renderInterval;
         }
