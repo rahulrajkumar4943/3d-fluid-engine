@@ -35,12 +35,19 @@ int main() {
         config::OBJECT_SCALE // scale of object
     );
 
+    
+
     // renderer
     Renderer renderer;
+
 
     if (!renderer.init()) {
         return -1;
     }
+
+    std::cout << "BEFORE LOADING OBJECT" << std::endl;
+    renderer.loadObject(state.object.stlPath);
+    std::cout << "AFTER LOADING OBJECT" << std::endl;
 
     // hot path with fixed time
     auto nextEngineTick = simulation_clock::now();

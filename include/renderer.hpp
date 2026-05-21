@@ -2,6 +2,7 @@
 
 
 #include <cmath>
+#include <iostream>
 
 #include "simulation_state.hpp"
 #include "raylib.h"
@@ -34,6 +35,20 @@ class Renderer {
             running = !WindowShouldClose();
         }
 
+        // load the object into the render class. puts it in the carModel variable owned by render class
+        // this is called once before the hotpaths start running
+        // this function loads all the vao meshes then loads meshes again for an unkown reason. warning says trying to reload already loaded mesh can be ignore
+        void loadObject(const std::string& path) {
+            std::cout << "LOAD OBJECT FUNCTION CALLED" << std::endl;
+
+            if (carLoaded) {
+                UnloadModel(carModel);
+                carLoaded = false;
+            }
+
+            carModel = LoadModel(path.c_str());
+            carLoaded = true;
+        }
        
 
         // render hotpath (2 functions for the hotpath)
@@ -116,10 +131,11 @@ class Renderer {
             // draw the car
             {
                 // load the car only once
-                if (!carLoaded) {
-                    carModel = LoadModel(state.object.stlPath.c_str());
-                    carLoaded = true;
-                }
+                // if (!carLoaded) {
+                //     carModel = LoadModel(state.object.stlPath.c_str());
+                //     carLoaded = true;
+                // }
+                // car is loaded seperately once before the hotpath. not here
 
                 // build transform from SimulationState
                 // scale
