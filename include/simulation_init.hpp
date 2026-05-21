@@ -28,8 +28,9 @@ inline void initWindTunnel(SimulationState& state) {
                 bool right_side  = (z == 0); // right side of the car assuming car faces inlet
                 bool left_side  = (z == state.nz - 1); // left side of the car assuming car faces inlet
 
-
-                if (floor || back || left_side || right_side || roof || front) {
+                // back is not included here because the outlet should be not solid for air to espace
+                // front is not included because that is the inlet
+                if (floor || left_side || right_side || roof) {
                     state.solid[idx] = 1;
                 }
             }

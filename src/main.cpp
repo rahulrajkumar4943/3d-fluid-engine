@@ -5,11 +5,9 @@
 #include "simulation_init.hpp"
 #include "renderer.hpp"
 #include "constants.hpp"
+#include "physics.hpp"
 
-// placeholder physics function... put in its own file later
-void update_physics(SimulationState& state) {
-    // LBM engine will go here later
-}
+
 
 using simulation_clock = std::chrono::high_resolution_clock;
 
