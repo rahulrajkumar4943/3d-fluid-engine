@@ -20,9 +20,9 @@ namespace config {
     constexpr float WORLD_HEIGHT_Y = 6.0f;
     constexpr float WORLD_WIDTH_Z  = 6.0f;
     // in voxels aka resolution
-    constexpr int LBM_WORLD_LENGTH_X = 140; // flow direction
-    constexpr int LBM_WORLD_HEIGHT_Y = 60;
-    constexpr int LBM_WORLD_WIDTH_Z  = 60;
+    constexpr int LBM_WORLD_LENGTH_X = 420; // flow direction
+    constexpr int LBM_WORLD_HEIGHT_Y = 180;
+    constexpr int LBM_WORLD_WIDTH_Z  = 180;
     // cell sizes
     constexpr float CELL_LENGTH_X = WORLD_LENGTH_X / LBM_WORLD_LENGTH_X; // flow direction
     constexpr float CELL_HEIGHT_Y = WORLD_HEIGHT_Y / LBM_WORLD_HEIGHT_Y;

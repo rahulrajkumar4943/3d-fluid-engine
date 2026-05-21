@@ -57,6 +57,15 @@ inline void spawnObjectIntoWorld(
 }
 
 
+// forward declaration of triangle aabb intersect function
+static bool TriangleAABBIntersect(
+    const Vector3& v0,
+    const Vector3& v1,
+    const Vector3& v2,
+    const Vector3& bmin,
+    const Vector3& bmax
+);
+
 // voxelize the object that was loaded
 inline void voxelizeObject(SimulationState& state, const Model& model) {
     const int totalVoxels = state.nx * state.ny * state.nz;
@@ -148,13 +157,31 @@ inline void voxelizeObject(SimulationState& state, const Model& model) {
 
             // turn those voxels into solid
             // right now the entire bounding box is turned solid instead of just the voxels touching the triangle
+            // fixed the above statement
+            // current triangle corners are v0, v1, v2
             for (int z = startZ; z <= endZ; z++) {
                 for (int y = startY; y <= endY; y++) {
                     for (int x = startX; x <= endX; x++) {
-                        
+
                         int idx = state.index(x, y, z);
-                        
-                        if (idx >= 0 && idx < totalVoxels) {
+
+                        if (idx < 0 || idx >= totalVoxels)
+                            continue;
+
+                        Vector3 voxelMin = {
+                            x * config::CELL_LENGTH_X,
+                            y * config::CELL_HEIGHT_Y,
+                            z * config::CELL_WIDTH_Z
+                        };
+
+                        Vector3 voxelMax = {
+                            (x + 1) * config::CELL_LENGTH_X,
+                            (y + 1) * config::CELL_HEIGHT_Y,
+                            (z + 1) * config::CELL_WIDTH_Z
+                        };
+
+                        // if the triangle intersects the voxel then its solid
+                        if (TriangleAABBIntersect(v0, v1, v2, voxelMin, voxelMax)) {
                             state.solid[idx] = 1;
                         }
                     }
@@ -162,4 +189,102 @@ inline void voxelizeObject(SimulationState& state, const Model& model) {
             }
         }
     }
+}
+
+
+
+// axis test helper function for triangle aabb intersect function
+static bool axisTest(
+    const Vector3& test_axis,
+    float extent_x, float extent_y, float extent_z,
+    const Vector3& shifted_v0,
+    const Vector3& shifted_v1,
+    const Vector3& shifted_v2
+)
+{
+    // proj axis (triangle)
+    float p0 = Vector3DotProduct(test_axis, shifted_v0);
+    float p1 = Vector3DotProduct(test_axis, shifted_v1);
+    float p2 = Vector3DotProduct(test_axis, shifted_v2);
+
+    // compute proj of radius of aabb onto axis a
+    float r = extent_x * fabsf(test_axis.x) + extent_y * fabsf(test_axis.y) + extent_z * fabsf(test_axis.z);
+
+    // find min max prof of triangle for sat test condition
+    float minP = fminf(p0, fminf(p1, p2));
+    float maxP = fmaxf(p0, fmaxf(p1, p2));
+
+    // sat test condition
+    return !(minP > r || maxP < -r);
+}
+
+static bool TriangleAABBIntersect(
+    const Vector3& v0,
+    const Vector3& v1,
+    const Vector3& v2,
+    const Vector3& bmin, // box min coords
+    const Vector3& bmax // box max coords
+) {
+    // get triangle vertices relative to box center
+    Vector3 center = {
+        (bmin.x + bmax.x) * 0.5f,
+        (bmin.y + bmax.y) * 0.5f,
+        (bmin.z + bmax.z) * 0.5f
+    };
+
+    // box half size or extents so box is c +- e
+    Vector3 extent = {
+        (bmax.x - bmin.x) * 0.5f,
+        (bmax.y - bmin.y) * 0.5f,
+        (bmax.z - bmin.z) * 0.5f
+    };
+
+    // transform triangle so box is centered at origin
+    Vector3 shifted_v0 = Vector3Subtract(v0, center);
+    Vector3 shifted_v1 = Vector3Subtract(v1, center);
+    Vector3 shifted_v2 = Vector3Subtract(v2, center);
+
+    // get triangle edges
+    Vector3 edge0 = Vector3Subtract(shifted_v1, shifted_v0);
+    Vector3 edge1 = Vector3Subtract(shifted_v2, shifted_v1);
+    Vector3 edge2 = Vector3Subtract(shifted_v0, shifted_v2);
+
+
+
+    // generate test axes
+    Vector3 axes[9] = {
+        Vector3CrossProduct({1,0,0}, edge0),
+        Vector3CrossProduct({1,0,0}, edge1),
+        Vector3CrossProduct({1,0,0}, edge2),
+
+        Vector3CrossProduct({0,1,0}, edge0),
+        Vector3CrossProduct({0,1,0}, edge1),
+        Vector3CrossProduct({0,1,0}, edge2),
+
+        Vector3CrossProduct({0,0,1}, edge0),
+        Vector3CrossProduct({0,0,1}, edge1),
+        Vector3CrossProduct({0,0,1}, edge2),
+    };
+
+    // test all 9 axes
+    for (int i = 0; i < 9; i++) {
+        Vector3 a = axes[i];
+
+        if (fabsf(a.x) < 1e-6f && fabsf(a.y) < 1e-6f && fabsf(a.z) < 1e-6f)
+            continue;
+
+        if (!axisTest(a, extent.x, extent.y, extent.z, shifted_v0, shifted_v1, shifted_v2))
+            return false;
+    }
+
+    // box normals
+    if (!axisTest({1,0,0}, extent.x, extent.y, extent.z, shifted_v0, shifted_v1, shifted_v2)) return false;
+    if (!axisTest({0,1,0}, extent.x, extent.y, extent.z, shifted_v0, shifted_v1, shifted_v2)) return false;
+    if (!axisTest({0,0,1}, extent.x, extent.y, extent.z, shifted_v0, shifted_v1, shifted_v2)) return false;
+
+    // triangle normal
+    Vector3 n = Vector3CrossProduct(edge0, edge1);
+    if (!axisTest(n, extent.x, extent.y, extent.z, shifted_v0, shifted_v1, shifted_v2)) return false;
+
+    return true;
 }
