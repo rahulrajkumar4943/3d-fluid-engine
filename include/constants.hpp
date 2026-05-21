@@ -34,6 +34,10 @@ namespace config {
     // floor and wall thickness
     constexpr float FLOOR_THICKNESS = 0.1f;
     constexpr float WALL_THICKNESS = 0.1f;
+    // object parameters
+    inline const Vector3 OBJECT_POSITION = {WORLD_LENGTH_X/2, 0.62, WORLD_WIDTH_Z/2}; // for porsche 0 0 0 is middle of car. // porsche 911 g1 is roughly 1.3m tall so y offset is only 0.65
+    inline const Vector3 OBJECT_ROTATION = {0.0f, 90.0f, 0.0f}; // x 90 makes car face up, y 90 makes car face inlet, z 90 makes car go on its side
+    constexpr float OBJECT_SCALE = 1.0f;
     // lbm parameters
     constexpr float TAU = 0.6f;   // relaxation time
     constexpr float DT  = 1.0f;   // lattice timestep

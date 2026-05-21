@@ -1,5 +1,6 @@
 #pragma once
 
+#include <string>
 #include "simulation_state.hpp"
 
 
@@ -26,4 +27,23 @@ inline void initWindTunnel(SimulationState& state) {
             }
         }
     }
+}
+
+
+// init object function
+// spawn object first then init the voxels
+// spawn object just tells the simulation state where the object is, and which file the object is from
+inline void spawnObjectIntoWorld(
+    SimulationState& state,
+    const std::string& stlPath,
+    const Vector3& position,
+    const Vector3& rotation,
+    float scale
+) {
+    state.object.stlPath = stlPath;
+
+    state.object.position = position;
+    state.object.rotation = rotation;
+
+    state.object.scale = scale;
 }

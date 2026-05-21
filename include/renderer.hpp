@@ -42,8 +42,8 @@ class Renderer {
         // actual render function (looks nice)
         void renderScene(const SimulationState& state) {
 
-           // TODO
-           updateCamera();
+           
+            updateCamera();
 
             BeginDrawing();
             ClearBackground(RAYWHITE);
@@ -88,9 +88,11 @@ class Renderer {
                     lineColor
                 );
 
+                
+
 
             }
-
+            
             // wall to the right of car z = 0
             {
                 Vector3 a = {0, 0, 0};
@@ -109,6 +111,48 @@ class Renderer {
                     lineColor
                 );
 
+            }
+
+            // draw the car
+            {
+                // load the car only once
+                if (!carLoaded) {
+                    carModel = LoadModel(state.object.stlPath.c_str());
+                    carLoaded = true;
+                }
+
+                // build transform from SimulationState
+                // scale
+                Matrix scaleMat = MatrixScale(
+                    state.object.scale,
+                    state.object.scale,
+                    state.object.scale
+                );
+
+                // rotation
+                Matrix rotMat = MatrixRotateXYZ({
+                    state.object.rotation.x * DEG2RAD,
+                    state.object.rotation.y * DEG2RAD,
+                    state.object.rotation.z * DEG2RAD
+                });
+
+                // position
+                Matrix transMat = MatrixTranslate(
+                    state.object.position.x,
+                    state.object.position.y,
+                    state.object.position.z
+                );
+
+                // multiply all to get transform matrix
+                Matrix transform = MatrixMultiply(
+                    MatrixMultiply(scaleMat, rotMat),
+                    transMat
+                );
+
+                carModel.transform = transform;
+
+                // draw model, keep scale as 1.0 because scale is already handled above
+                DrawModel(carModel, Vector3Zero(), 1.0f, Color{150, 150, 150, 200});
             }
 
             EndMode3D();
@@ -239,4 +283,7 @@ class Renderer {
 
         float moveSpeed = config::MOVE_SPEED;
         float mouseSensitivity = config::MOUSE_SENS;
+
+        Model carModel;
+        bool carLoaded = false;
 };

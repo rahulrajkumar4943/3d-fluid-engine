@@ -24,6 +24,17 @@ int main() {
 
     initWindTunnel(state);
 
+    // tell the simulation state where object is and what the file is 
+    // simulation state doesnt store the actual mesh. 
+    // that is handled by the render and voxel functions
+    spawnObjectIntoWorld(
+        state,
+        "static/Porsche_911_GT2.obj",
+        config::OBJECT_POSITION, // position
+        config::OBJECT_ROTATION, // rotation
+        config::OBJECT_SCALE // scale of object
+    );
+
     // renderer
     Renderer renderer;
 
