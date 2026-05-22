@@ -74,7 +74,63 @@ inline void initializeLBM(SimulationState& state) {
 
 }
 
-// physics hotpath that is run every tick
+
+
+
+
+// spawn tracer particles
+inline void spawnTracerParticles(SimulationState& state) {
+    const int spawn_voxel_x = 1;
+    const float spawn_point_x = (spawn_voxel_x + 0.5f) * config::CELL_LENGTH_X;
+    
+    // index of particle that is currently being spawned
+    int particle_index = 0;
+
+    // loop through grid
+    for (int z = 0; z < state.nz; z++) {
+        for (int y = 0; y < state.ny; y++) {
+            
+            // skip every other voxel
+            if (((y + z) % 2) != 0) {
+                continue;
+            };
+
+            // find next available empty particle slot
+            //  where x <= 0.0f
+            // be default at the end of this function we increment particle index but if that doesnt work then this is needed
+            while (particle_index < state.tracerCount && state.tracer_particles_x[particle_index] > 0.0f) {
+                particle_index++;
+            }
+
+            // if no more particle slots or if past limit then dont spawn
+            if (particle_index >= state.tracerCount || particle_index >= config::MAX_PARTICLES) {
+                return;
+            }
+
+            // spawn coords
+            float spawn_y = (y + 0.5f) * config::CELL_HEIGHT_Y;
+            float spawn_z = (z + 0.5f) * config::CELL_WIDTH_Z;
+
+            state.tracer_particles_x[particle_index] = spawn_point_x;
+            state.tracer_particles_y[particle_index] = spawn_y;
+            state.tracer_particles_z[particle_index] = spawn_z;
+
+            // initialise velocities to 0
+            state.tracer_velocity_x[particle_index] = 0.0f;
+            state.tracer_velocity_y[particle_index] = 0.0f;
+            state.tracer_velocity_z[particle_index] = 0.0f;
+            
+            // Move to the next index for the next grid cell
+            particle_index++;
+        }
+    }
+}
+
+// move tracer particles
+
+
+// physics hot path runs every engine tick
 inline void update_physics(SimulationState& state) {
+    spawnTracerParticles(state);
 
 }

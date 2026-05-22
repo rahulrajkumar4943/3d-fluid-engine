@@ -37,7 +37,7 @@ namespace config {
     // object parameters
     inline const Vector3 OBJECT_POSITION = {WORLD_LENGTH_X/2, 0.62, WORLD_WIDTH_Z/2}; // for porsche 0 0 0 is middle of car. // porsche 911 g1 is roughly 1.3m tall so y offset is only 0.65
     inline const Vector3 OBJECT_ROTATION = {0.0f, 90.0f, 0.0f}; // x 90 makes car face up, y 90 makes car face inlet, z 90 makes car go on its side
-    constexpr float OBJECT_SCALE = 1.0f;
+    constexpr float OBJECT_SCALE = 1.0f; // the porsche model is already the correct size in meters
     // lbm parameters
     constexpr float TAU = 0.55f;   // relaxation time
     constexpr float RHO = 1.0f;   // density of fluid in a voxel
