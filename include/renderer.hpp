@@ -176,6 +176,20 @@ class Renderer {
                 DrawModel(carModel, Vector3Zero(), 1.0f, Color{150, 150, 150, 200});
             }
 
+            // draw the tracer particles
+            // currently this draws each sphere individually which is slow
+            // change this to do one draw command for all spheres
+            for (int i = 0; i < state.tracerCount; i++) {
+
+                Vector3 pos = {
+                    state.tracer_particles_x[i],
+                    state.tracer_particles_y[i],
+                    state.tracer_particles_z[i]
+                };
+
+                DrawPoint3D(pos, BLUE);
+            }
+
             EndMode3D();
 
             DrawText("Scene Renderer", 20, 20, 20, DARKGRAY);

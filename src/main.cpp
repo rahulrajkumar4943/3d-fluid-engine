@@ -51,6 +51,9 @@ int main() {
     // voxelise the object for LBM
     voxelizeObject(state, renderer.getModel());
 
+    // initialise the lbm values
+    initializeLBM(state);
+
     // hot path with fixed time
     auto nextEngineTick = simulation_clock::now();
     auto nextRenderTick = simulation_clock::now();
@@ -77,8 +80,8 @@ int main() {
 
             renderer.handleEvents();
 
-            renderer.renderLBMVoxel(state);
-            // renderer.renderScene(state);
+            // renderer.renderLBMVoxel(state);
+            renderer.renderScene(state);
 
             nextRenderTick += renderInterval;
         }
