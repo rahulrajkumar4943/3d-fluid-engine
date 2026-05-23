@@ -12,6 +12,7 @@ namespace config {
     // interval micros are int because std chrono microseconds needs int
     constexpr int ENGINE_INTERVAL_MICROS = MICROS_IN_S / ENGINE_HZ; // microseconds between each engine frame
     constexpr int RENDER_INTERVAL_MICROS = MICROS_IN_S / RENDER_HZ; // microseconds between each render frame
+    constexpr float ENGINE_INTERVAL_S = 1.0f / ENGINE_HZ; // timestep in seconds aka delta
 
     // lbm parameters (only for math and physics)
     // world / domain size
@@ -44,7 +45,9 @@ namespace config {
     // constexpr float DT  = 1.0f;   // lattice timestep this value is arbitrary and wrong
     constexpr float CS2 = 1.0f / 3.0f; // speed of sound squared
     // inlet and initial velocities for lbm sim
-    constexpr float INLET_VELOCITY_X = 0.08f;
+    constexpr float INLET_VELOCITY_X_MPS = 2.0f; // meter/s
+    constexpr float INLET_VELOCITY_X = INLET_VELOCITY_X_MPS * (LBM_WORLD_LENGTH_X / WORLD_LENGTH_X); // lattice_unit/s
+    constexpr float INLET_VELOCITY_X_LUPT = INLET_VELOCITY_X *  ENGINE_INTERVAL_S; // lattice units per timestep
     constexpr float INLET_VELOCITY_Y = 0.0f;
     constexpr float INLET_VELOCITY_Z = 0.0f;
     // tracer particles

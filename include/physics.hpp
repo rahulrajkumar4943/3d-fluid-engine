@@ -17,7 +17,7 @@ inline void initializeLBM(SimulationState& state) {
 
     const float rho = config::RHO;
 
-    const float initial_velocity_x = config::INLET_VELOCITY_X;
+    const float initial_velocity_x = config::INLET_VELOCITY_X_LUPT;
     const float initial_velocity_y = config::INLET_VELOCITY_Y;
     const float initial_velocity_z = config::INLET_VELOCITY_Z;
 
@@ -98,7 +98,7 @@ inline void spawnTracerParticles(SimulationState& state) {
             // find next available empty particle slot
             //  where x <= 0.0f
             // be default at the end of this function we increment particle index but if that doesnt work then this is needed
-            while (particle_index < state.tracerCount && state.tracer_particles_x[particle_index] > 0.0f) {
+            while (particle_index < state.tracerCount && state.tracer_particles_x[particle_index] > 0.0f) { // if x location strictly > 0 then active
                 particle_index++;
             }
 
@@ -107,6 +107,11 @@ inline void spawnTracerParticles(SimulationState& state) {
                 return;
             }
 
+            // debug line
+            // if (particle_index == 8755) {
+            //     std::cout << "Reset particle #" << 8755 << std::endl;
+            // }
+            
             // spawn coords
             float spawn_y = (y + 0.5f) * config::CELL_HEIGHT_Y;
             float spawn_z = (z + 0.5f) * config::CELL_WIDTH_Z;
@@ -128,9 +133,126 @@ inline void spawnTracerParticles(SimulationState& state) {
 
 // move tracer particles
 
+// right now i loop through each tracer and calculate its voxels velocity
+// this is not the most efficient as i may be calculating the same voxel vel multiple times in one tick
+// add some kindof cache storage to store already calculated vels for that tick to avoid unnecesary calcs
+
+inline void updateTracerParticles(SimulationState& state)
+{
+    const int Q = lbm::D3Q19::Q;
+    const int N = state.totalCells;
+
+    const float dt = config::ENGINE_INTERVAL_S; // time delta between each frame in seconds
+
+    // loop through all the tracers
+    for (int i = 0; i < state.tracerCount; i++) {
+        // skip inactive particles
+        if (state.tracer_particles_x[i] <= 0.0f) // if the tracer is inactive then skip this iteration
+            continue;
+
+        // turn world position into voxel coordinates
+        // to see which voxel the point is currently in
+        float tracer_x_coord = state.tracer_particles_x[i];
+        float tracer_y_coord = state.tracer_particles_y[i];
+        float tracer_z_coord = state.tracer_particles_z[i];
+
+        int tracer_x_voxel = (int)(tracer_x_coord / config::CELL_LENGTH_X);
+        int tracer_y_voxel = (int)(tracer_y_coord / config::CELL_HEIGHT_Y);
+        int tracer_z_voxel = (int)(tracer_z_coord / config::CELL_WIDTH_Z);
+
+        // check bounds of voxel
+        if (tracer_x_voxel < 0 || tracer_x_voxel >= state.nx ||
+            tracer_y_voxel < 0 || tracer_y_voxel >= state.ny ||
+            tracer_z_voxel < 0 || tracer_z_voxel >= state.nz)
+        {
+            state.tracer_particles_x[i] = 0.0f; // if tracer is out of bounds then make it invalid
+            state.tracer_particles_y[i] = 0.0f;
+            state.tracer_particles_z[i] = 0.0f;
+            continue;
+        }
+
+        // index of current voxel
+        int idx = state.index(tracer_x_voxel, tracer_y_voxel, tracer_z_voxel);
+
+        // if the current voxel is solid then make the particle invalid
+        if (state.solid[idx]) {
+            state.tracer_particles_x[i] = 0.0f;
+            continue;
+        }
+
+        // reconstruct voxel velocity from lbm
+        float rho = 0.0f;
+        float voxel_vel_x = 0.0f; 
+        float voxel_vel_y = 0.0f; 
+        float voxel_vel_z = 0.0f;
+
+        for (int q = 0; q < Q; q++)
+        {
+            // value of current direction q
+            float direction_flow_value = state.directions[q * N + idx];
+            rho += direction_flow_value;
+
+            // direction vector for current direction
+            const auto& direction_vector = lbm::D3Q19::directions[q];
+
+            voxel_vel_x += direction_flow_value * direction_vector.x;
+            voxel_vel_y += direction_flow_value * direction_vector.y;
+            voxel_vel_z += direction_flow_value * direction_vector.z;
+        }
+
+        if (rho > 1e-8f)
+        {
+            voxel_vel_x /= rho;
+            voxel_vel_y /= rho;
+            voxel_vel_z /= rho;
+        }
+
+        // voxel_vel_x exists properly
+
+
+        // convert lattice velocity to world velocity
+        // voxel_vel_x is in cells per tick so if voxel_vel_x = 1 that means you move 1 cell per tick
+        // to change the cell into meters we multiply by the cell length
+        // to change tick to second we divide by engine interval s
+        float vx = voxel_vel_x * (config::CELL_LENGTH_X / config::ENGINE_INTERVAL_S); // now this is meters per second
+        float vy = voxel_vel_y * (config::CELL_HEIGHT_Y / config::ENGINE_INTERVAL_S);
+        float vz = voxel_vel_z * (config::CELL_WIDTH_Z / config::ENGINE_INTERVAL_S);
+
+        // store velocities (meter/second)
+        state.tracer_velocity_x[i] = vx;
+        state.tracer_velocity_y[i] = vy;
+        state.tracer_velocity_z[i] = vz;
+
+        // debug statements
+        // if (i == 8755) {
+        //     std::cout << "vx: " << vx << std::endl;
+        //     std::cout << "vy: " << vy << std::endl;
+        //     std::cout << "vz: " << vz << std::endl;
+        //     std::cout << "dt: " << dt << std::endl;
+        // }
+
+
+        // update particles positions based on velocity
+        state.tracer_particles_x[i] += vx * dt;
+        state.tracer_particles_y[i] += vy * dt;
+        state.tracer_particles_z[i] += vz * dt;
+
+        // if particle reaches outlet then make it inactive
+        if (state.tracer_particles_x[i] >= config::WORLD_LENGTH_X)
+        {
+            state.tracer_particles_x[i] = 0.0f;
+        }
+    }
+}
+
 
 // physics hot path runs every engine tick
 inline void update_physics(SimulationState& state) {
     spawnTracerParticles(state);
+    updateTracerParticles(state);
+
+    // debug statements
+    // std::cout << "particle x vel" << state.tracer_velocity_x[8755] << std::endl;
+    // std::cout << "particle x pos" << state.tracer_particles_x[8755] << std::endl;
 
 }
