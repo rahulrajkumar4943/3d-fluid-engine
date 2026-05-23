@@ -76,59 +76,58 @@ inline void initializeLBM(SimulationState& state) {
 
 
 
-
+//i need to have a spawn particle function that basically takes the count, 
+// generates a random number and mods it to that count, then spawns a particle at that voxel. 
+// or even better just directly generate a number between 0 and the count
 
 // spawn tracer particles
 inline void spawnTracerParticles(SimulationState& state) {
-    const int spawn_voxel_x = 1;
-    const float spawn_point_x = (spawn_voxel_x + 0.5f) * config::CELL_LENGTH_X;
-    
-    // index of particle that is currently being spawned
-    int particle_index = 0;
 
-    // loop through grid
-    for (int z = 0; z < state.nz; z++) {
-        for (int y = 0; y < state.ny; y++) {
-            
-            // skip every other voxel
-            if (((y + z) % 2) != 0) {
-                continue;
-            };
+    // get next particle to be spawned
 
-            // find next available empty particle slot
-            //  where x <= 0.0f
-            // be default at the end of this function we increment particle index but if that doesnt work then this is needed
-            while (particle_index < state.tracerCount && state.tracer_particles_x[particle_index] > 0.0f) { // if x location strictly > 0 then active
-                particle_index++;
-            }
+    int particles_spawned_this_tick = 0;
 
-            // if no more particle slots or if past limit then dont spawn
-            if (particle_index >= state.tracerCount || particle_index >= config::MAX_PARTICLES) {
-                return;
-            }
-
-            // debug line
-            // if (particle_index == 8755) {
-            //     std::cout << "Reset particle #" << 8755 << std::endl;
-            // }
-            
-            // spawn coords
-            float spawn_y = (y + 0.5f) * config::CELL_HEIGHT_Y;
-            float spawn_z = (z + 0.5f) * config::CELL_WIDTH_Z;
-
-            state.tracer_particles_x[particle_index] = spawn_point_x;
-            state.tracer_particles_y[particle_index] = spawn_y;
-            state.tracer_particles_z[particle_index] = spawn_z;
-
-            // initialise velocities to 0
-            state.tracer_velocity_x[particle_index] = 0.0f;
-            state.tracer_velocity_y[particle_index] = 0.0f;
-            state.tracer_velocity_z[particle_index] = 0.0f;
-            
-            // Move to the next index for the next grid cell
-            particle_index++;
+    // loop through all particles
+    for (int particle_index = 0; particle_index < state.tracerCount; particle_index++) {
+        // if the particle is active then skip
+        if (state.tracer_particles_x[particle_index] > 0.0f) { // if the tracer is active then skip this iteration
+            continue;
         }
+
+        // otherwise spawn the particle
+        // generate which voxel should spawn the particle
+        // use uniform dist instead of mod to remove bias
+        std::uniform_int_distribution<int> distribution(0, state.num_spawn_voxels - 1);
+        int spawn_voxel_index = state.spawn_voxel_indices[distribution(state.randomNumberGenerator)];
+
+        // spawn a particle at that voxel
+        int spawn_voxel_x = 1; // we know voxel x is 1 because thats what all the spawn voxels were set at
+        int spawn_voxel_y = (spawn_voxel_index / state.nx) % state.ny;
+        int spawn_voxel_z = spawn_voxel_index / (state.nx * state.ny);
+
+        // get the real world spawn point
+        const float spawn_point_x = (spawn_voxel_x + 0.5f) * config::CELL_LENGTH_X;
+        const float spawn_point_y = (spawn_voxel_y + 0.5f) * config::CELL_HEIGHT_Y;
+        const float spawn_point_z = (spawn_voxel_z + 0.5f) * config::CELL_WIDTH_Z;
+
+        // spawn the particle
+        state.tracer_particles_x[particle_index] = spawn_point_x;
+        state.tracer_particles_y[particle_index] = spawn_point_y;
+        state.tracer_particles_z[particle_index] = spawn_point_z;
+
+        // initialise velocities to 0
+        state.tracer_velocity_x[particle_index] = 0.0f;
+        state.tracer_velocity_y[particle_index] = 0.0f;
+        state.tracer_velocity_z[particle_index] = 0.0f;
+
+        particles_spawned_this_tick += 1;
+
+        if (particles_spawned_this_tick >= 25) {
+            return;
+        }
+
     }
+
 }
 
 // move tracer particles
@@ -137,8 +136,7 @@ inline void spawnTracerParticles(SimulationState& state) {
 // this is not the most efficient as i may be calculating the same voxel vel multiple times in one tick
 // add some kindof cache storage to store already calculated vels for that tick to avoid unnecesary calcs
 
-inline void updateTracerParticles(SimulationState& state)
-{
+inline void updateTracerParticles(SimulationState& state) {
     const int Q = lbm::D3Q19::Q;
     const int N = state.totalCells;
 
@@ -147,8 +145,9 @@ inline void updateTracerParticles(SimulationState& state)
     // loop through all the tracers
     for (int i = 0; i < state.tracerCount; i++) {
         // skip inactive particles
-        if (state.tracer_particles_x[i] <= 0.0f) // if the tracer is inactive then skip this iteration
+        if (state.tracer_particles_x[i] <= 0.0f) { // if the tracer is inactive then skip this iteration
             continue;
+        }
 
         // turn world position into voxel coordinates
         // to see which voxel the point is currently in
@@ -177,6 +176,8 @@ inline void updateTracerParticles(SimulationState& state)
         // if the current voxel is solid then make the particle invalid
         if (state.solid[idx]) {
             state.tracer_particles_x[i] = 0.0f;
+            state.tracer_particles_y[i] = 0.0f;
+            state.tracer_particles_z[i] = 0.0f;
             continue;
         }
 
@@ -186,8 +187,7 @@ inline void updateTracerParticles(SimulationState& state)
         float voxel_vel_y = 0.0f; 
         float voxel_vel_z = 0.0f;
 
-        for (int q = 0; q < Q; q++)
-        {
+        for (int q = 0; q < Q; q++) {
             // value of current direction q
             float direction_flow_value = state.directions[q * N + idx];
             rho += direction_flow_value;
@@ -200,8 +200,7 @@ inline void updateTracerParticles(SimulationState& state)
             voxel_vel_z += direction_flow_value * direction_vector.z;
         }
 
-        if (rho > 1e-8f)
-        {
+        if (rho > 1e-8f) {
             voxel_vel_x /= rho;
             voxel_vel_y /= rho;
             voxel_vel_z /= rho;
@@ -238,9 +237,10 @@ inline void updateTracerParticles(SimulationState& state)
         state.tracer_particles_z[i] += vz * dt;
 
         // if particle reaches outlet then make it inactive
-        if (state.tracer_particles_x[i] >= config::WORLD_LENGTH_X)
-        {
+        if (state.tracer_particles_x[i] >= config::WORLD_LENGTH_X) {
             state.tracer_particles_x[i] = 0.0f;
+            state.tracer_particles_y[i] = 0.0f;
+            state.tracer_particles_z[i] = 0.0f;
         }
     }
 }

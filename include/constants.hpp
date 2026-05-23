@@ -14,6 +14,8 @@ namespace config {
     constexpr int RENDER_INTERVAL_MICROS = MICROS_IN_S / RENDER_HZ; // microseconds between each render frame
     constexpr float ENGINE_INTERVAL_S = 1.0f / ENGINE_HZ; // timestep in seconds aka delta
 
+    // seed for random number generator
+    constexpr int RNG_SEED = 938475;
     // lbm parameters (only for math and physics)
     // world / domain size
     // in meters
@@ -53,6 +55,8 @@ namespace config {
     // tracer particles
     constexpr int MAX_PARTICLES = 150000; // 150k and 60k work fine. if you 10x that i think it does fit on cache anymore
     constexpr int INITIAL_PARTICLES = 60000;
+    // number of particles to spawn per tick
+    constexpr int INLET_SPAWN_FREQ = 100;
     
 
 

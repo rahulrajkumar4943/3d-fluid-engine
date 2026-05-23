@@ -2,6 +2,7 @@
 
 #include <string>
 #include <vector>
+#include <random>
 
 #include "raylib.h"
 
@@ -60,6 +61,13 @@ struct SimulationState {
 
     WorldObject object; // this is the object that goes in the wind tunnel
 
+    // deterministic random number generator
+    std::mt19937 randomNumberGenerator;
+
+    // spawn voxel indices
+    std::vector<int> spawn_voxel_indices;
+    int num_spawn_voxels;
+
     // constructor to initialize simulation state
     SimulationState(int nx_, int ny_, int nz_)
         : nx(nx_), ny(ny_), nz(nz_) {
@@ -90,6 +98,26 @@ struct SimulationState {
         tracer_spawn_z.resize(config::MAX_PARTICLES, 0.0f);
 
         tracerCount = config::INITIAL_PARTICLES;
+
+        // seed the generator
+        randomNumberGenerator.seed(config::RNG_SEED);
+
+        // built spawn voxel list
+        const int spawn_x = 1;
+        num_spawn_voxels = 0;
+
+        for (int z = 0; z < nz; z++) {
+            for (int y = 0; y < ny; y++) {
+                if (((y + z) % 2) != 0) {
+                    continue;
+                }
+
+                int spawn_idx = index(spawn_x, y, z);
+                spawn_voxel_indices.push_back(spawn_idx);
+                num_spawn_voxels += 1;
+
+            }
+        }
     }
 
 
