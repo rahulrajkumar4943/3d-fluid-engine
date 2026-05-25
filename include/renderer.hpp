@@ -5,6 +5,7 @@
 #include <iostream>
 
 #include "raylib.h"
+#include "rlgl.h"
 #include "raymath.h"
 
 #include "simulation_state.hpp"
@@ -55,6 +56,14 @@ class Renderer {
             return carModel;
         }
        
+
+        // mesh draw tracer particles command
+        // add mesh drawer here
+        // vertex buffer vao
+
+        void drawTracerParticlesMesh(const SimulationState& state) {
+
+        }
 
         // render hotpath (2 functions for the hotpath)
         // one for debugging and one for actual visuals
@@ -190,6 +199,8 @@ class Renderer {
                 DrawPoint3D(pos, BLUE);
             }
 
+            // drawTracerParticlesMesh(state);
+
             EndMode3D();
 
             DrawText("Scene Renderer", 20, 20, 20, DARKGRAY);
@@ -226,6 +237,20 @@ class Renderer {
                         // get voxel index and if its solid then draw the cube
                         int idx = state.index(x, y, z);
 
+                        // draw car in dark blue
+                        if (state.solid[idx] == 2) {
+
+                            Vector3 pos = {
+                                (x + 0.5f) * x_scale, // shifted by 0.5 so its center aligned
+                                (y + 0.5f) * y_scale,
+                                (z + 0.5f) * z_scale
+                            };
+
+                            DrawCube(pos, x_scale, y_scale, z_scale, Color{ 80, 80, 250, 255 } );
+                            DrawCubeWires(pos, x_scale, y_scale, z_scale, BLACK); // lines make it go from 28 to 6 fps
+                        }
+
+                        // draw walls in grey
                         if (state.solid[idx] == 1) {
 
                             Vector3 pos = {
@@ -321,4 +346,8 @@ class Renderer {
 
         Model carModel;
         bool carLoaded = false;
+
+        // mesh so that all particles can be drawn in one command
+        Mesh particleMesh{};
+        bool particleMeshReady = false;
 };

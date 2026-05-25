@@ -42,16 +42,18 @@ namespace config {
     inline const Vector3 OBJECT_ROTATION = {0.0f, 90.0f, 0.0f}; // x 90 makes car face up, y 90 makes car face inlet, z 90 makes car go on its side
     constexpr float OBJECT_SCALE = 1.0f; // the porsche model is already the correct size in meters
     // lbm parameters
-    constexpr float TAU = 0.55f;   // relaxation time
+    constexpr float TAU = 0.6f;   // relaxation time, usually about 0.6
     constexpr float RHO = 1.0f;   // density of fluid in a voxel
     // constexpr float DT  = 1.0f;   // lattice timestep this value is arbitrary and wrong
     constexpr float CS2 = 1.0f / 3.0f; // speed of sound squared
     // inlet and initial velocities for lbm sim
-    constexpr float INLET_VELOCITY_X_MPS = 2.0f; // meter/s
+    constexpr float INLET_VELOCITY_X_MPS = 5.0f; // meter/s
     constexpr float INLET_VELOCITY_X = INLET_VELOCITY_X_MPS * (LBM_WORLD_LENGTH_X / WORLD_LENGTH_X); // lattice_unit/s
     constexpr float INLET_VELOCITY_X_LUPT = INLET_VELOCITY_X *  ENGINE_INTERVAL_S; // lattice units per timestep
     constexpr float INLET_VELOCITY_Y = 0.0f;
     constexpr float INLET_VELOCITY_Z = 0.0f;
+    // adjustment to speed of whole wind tunnel every tick to prevent decay
+    constexpr float VOXEL_X_ADJUSTMENT = 0.00025f;
     // tracer particles
     constexpr int MAX_PARTICLES = 150000; // 150k and 60k work fine. if you 10x that i think it does fit on cache anymore
     constexpr int INITIAL_PARTICLES = 60000;

@@ -31,7 +31,7 @@ inline void initWindTunnel(SimulationState& state) {
                 // back is not included here because the outlet should be not solid for air to espace
                 // front is not included because that is the inlet
                 if (floor || left_side || right_side || roof) {
-                    state.solid[idx] = 1;
+                    state.solid[idx] = 2; // 1 is normal solid for no slip, 2 is wall with free slip
                 }
             }
         }

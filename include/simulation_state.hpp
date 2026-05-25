@@ -31,7 +31,8 @@ struct SimulationState {
 
     static constexpr int Q = lbm::D3Q19::Q; // 19
 
-    // this is a vector of every cell with a value of 0 or 1 representing solid or not solid
+    // this is a vector of every cell with a value of 0 or 1 or 2 representing solid or not solid
+    // 1 is car solid with no slip, 2 is wall solid with free slip, 0 is empty
     std::vector<uint8_t> solid;
 
     // flattened soa storage
