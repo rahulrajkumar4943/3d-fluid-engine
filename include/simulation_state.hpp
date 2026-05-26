@@ -123,17 +123,20 @@ struct SimulationState {
 
 
 
-    // function to get index because its in a continguous 1d array
+    // function to get voxel index because its in a continguous 1d array
     inline int index(int x, int y, int z) const {
         return x + y * nx + z * nx * ny;
     }
 
     // find index in flattened soa
+    // changed this function so that each direction for the same voxel is contigious
+    // that increased performance by 2x literally 
+    // 4300us per engine frame -> 2200 us per engine frame
     inline int directionIndex(int dir, int idx) const {
-        return dir * totalCells + idx;
+        return idx * Q + dir;
     }
     // same and prev function but with x y and z instead of already computed index
     inline int fIndex(int dir, int x, int y, int z) const {
-        return dir * totalCells + index(x, y, z);
+        return index(x, y, z) * Q + dir;
     }
 };
