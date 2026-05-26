@@ -62,7 +62,7 @@ int main() {
 
     const auto renderInterval = std::chrono::microseconds(config::RENDER_INTERVAL_MICROS);
     
-    // auto last_engine_tick = simulation_clock::now(); // purely for debugging
+    auto last_engine_tick = simulation_clock::now(); // purely for debugging
     // auto last_render_tick = simulation_clock::now(); // purely for debugging
     
     // main loop
@@ -79,27 +79,33 @@ int main() {
             nextEngineTick += engineInterval;
 
             // print time it took to run one engine cycle
-            // auto us = std::chrono::duration_cast<std::chrono::microseconds>(simulation_clock::now() - last_engine_tick).count();
-            // std::cout << "Engine run time: " << us << "us" << std::endl;
-            // std::cout << "Engine framerate: " << config::MICROS_IN_S / us << "Hz" << std::endl;
+            auto us = std::chrono::duration_cast<std::chrono::microseconds>(simulation_clock::now() - last_engine_tick).count();
+            std::cout << "Engine run time: " << us << "us" << std::endl;
+            std::cout << "Engine framerate: " << config::MICROS_IN_S / us << "Hz" << std::endl;
 
 
 
             // set last engine tick
-            // last_engine_tick = simulation_clock::now();
+            last_engine_tick = simulation_clock::now();
         }
 
         // -------- render hotpath --------
         if (now >= nextRenderTick) {
 
             // auto t0 = simulation_clock::now();
+
+
             renderer.handleEvents();
+
+
             // auto t1 = simulation_clock::now();
             // auto us = std::chrono::duration_cast<std::chrono::microseconds>(t1 - t0).count();
             // std::cout << "render handleEvents: " << us << " us\n";
 
             // only one of these at a time
             // renderer.renderLBMVoxel(state);
+
+
             renderer.renderScene(state);
 
             // auto scenet0 = simulation_clock::now();

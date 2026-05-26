@@ -19,7 +19,7 @@ inline float getVoxelVelX(const SimulationState& state, int x, int y, int z) {
     float rho = 0.0f;
     float ux = 0.0f;
     for (int q = 0; q < Q; q++) {
-        float fq = state.directions[q * N + idx];
+        float fq = state.directions[state.directionIndex(q, idx)];
         rho += fq;
         ux += fq * lbm::D3Q19::directions[q].x;
     }
@@ -89,7 +89,7 @@ inline void initializeLBM(SimulationState& state) {
 
                     // set the direction of the current voxel to the flow amount 
                     // in state directions flattened directions vector
-                    state.directions[q * N + idx] = current_q_flow;
+                    state.directions[state.directionIndex(q, idx)] = current_q_flow;
                 }
             }
         }
@@ -215,7 +215,7 @@ inline void updateTracerParticles(SimulationState& state) {
 
         for (int q = 0; q < Q; q++) {
             // value of current direction q
-            float direction_flow_value = state.directions[q * N + idx];
+            float direction_flow_value = state.directions[state.directionIndex(q, idx)];
             rho += direction_flow_value;
 
             // direction vector for current direction
@@ -590,8 +590,8 @@ inline void enforceInletVelocity(SimulationState& state) {
 
                     // set the direction of the current voxel to the flow amount 
                     // in state directions flattened directions vector
-                    state.directions[q * N + idx] = current_q_flow;
-                    state.nextDirections[q * N + idx] = current_q_flow;
+                    state.directions[state.directionIndex(q, idx)] = current_q_flow;
+                    state.nextDirections[state.directionIndex(q, idx)] = current_q_flow;
                 }
             
         }
