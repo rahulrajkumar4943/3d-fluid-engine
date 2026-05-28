@@ -189,14 +189,18 @@ class Renderer {
             // currently this draws each sphere individually which is slow
             // change this to do one draw command for all spheres
             for (int i = 0; i < state.tracerCount; i++) {
+                // only draw active particles
+                if (state.tracer_particles_x[i] > 0.0f) {
+                    Vector3 pos = {
+                        state.tracer_particles_x[i],
+                        state.tracer_particles_y[i],
+                        state.tracer_particles_z[i]
+                    };
 
-                Vector3 pos = {
-                    state.tracer_particles_x[i],
-                    state.tracer_particles_y[i],
-                    state.tracer_particles_z[i]
-                };
+                    DrawPoint3D(pos, BLUE);
+                }
 
-                DrawPoint3D(pos, BLUE);
+
             }
 
             // drawTracerParticlesMesh(state);

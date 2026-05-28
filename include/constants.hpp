@@ -59,6 +59,16 @@ namespace config {
     constexpr int INITIAL_PARTICLES = 60000;
     // number of particles to spawn per tick
     constexpr int INLET_SPAWN_FREQ = 100;
+
+
+    // networking parameters
+    constexpr int NETWORK_PORT = 9001;
+    constexpr const char* NETWORK_ADDRESS = "127.0.0.1";
+    constexpr int NETWORK_TICKRATE_HZ = 60;
+    constexpr int NETWORK_DECIMATION = 4;
+    constexpr float QUANTIZE_RESOLUTION = 65535.0f; // largest value in uint16
+    // 1200 particles per packet = 7200 bytes + 16 bytes of header
+    constexpr int NETWORK_PARTICLES_PER_PACKET = 1200;
     
 
 

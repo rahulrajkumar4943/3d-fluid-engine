@@ -1,24 +1,19 @@
 CXX = g++
+CXXFLAGS = -std=c++20 -O2 -Iinclude -I/opt/homebrew/opt/raylib/include
 
-RAYLIB_PATH = $(shell brew --prefix raylib)
+RAYLIB_LINK = -L/opt/homebrew/opt/raylib/lib -lraylib \
+              -framework OpenGL -framework Cocoa \
+              -framework IOKit -framework CoreVideo
 
-CXXFLAGS = -std=c++20 -O2 -Iinclude -I$(RAYLIB_PATH)/include
+HEADERS = include/*.hpp
 
-LDFLAGS = -L$(RAYLIB_PATH)/lib \
-          -lraylib \
-          -framework OpenGL \
-          -framework Cocoa \
-          -framework IOKit \
-          -framework CoreVideo
+all: engine renderer
 
-SRC = $(wildcard src/*.cpp)
-TARGET = engine
+engine: src/engine_main.cpp $(HEADERS)
+	$(CXX) $(CXXFLAGS) src/engine_main.cpp -o engine $(RAYLIB_LINK)
 
-all:
-	$(CXX) $(CXXFLAGS) $(SRC) -o $(TARGET) $(LDFLAGS)
-
-run:
-	./$(TARGET)
+renderer: src/renderer_main.cpp $(HEADERS)
+	$(CXX) $(CXXFLAGS) src/renderer_main.cpp -o renderer $(RAYLIB_LINK)
 
 clean:
-	rm -f $(TARGET)
+	rm -f engine renderer

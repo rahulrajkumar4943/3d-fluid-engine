@@ -10,8 +10,10 @@ here also change vscode c++ to 17 or 20 to avoid ide errors
 fixes to be made
 - [x] directions is not currently contiguous per q, it should be
 - [ ] simd
-- [ ] multipthreading
+- [ ] multithreading
 - [ ] cache blocking
 
-changing directions indexing so that all directions for the same voxel are contiguous increased engine performance by 2x (4300us -> 2200us per engine frame)
+
+
+Refactored lattice and voxel direction storage from direction-major to voxel-major layout (now the directions for the same voxel are contiguous), improved cache locality for per voxel collision and reconstruction passes, improved engine iteration time by ~2x (4300us -> 2200us per engine tick)
 
