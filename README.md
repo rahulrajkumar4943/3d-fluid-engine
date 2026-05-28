@@ -90,10 +90,10 @@ This builds two executables:
 ./renderer  # visualization client
 ```
 
-Run engine first, then renderer:
+Run engine and renderer executables:
 
 ```bash
-./engine &
+./engine
 ./renderer
 ```
 
