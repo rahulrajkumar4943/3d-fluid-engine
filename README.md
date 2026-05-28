@@ -126,7 +126,7 @@ Run engine first, then renderer:
 
 **Why UDP over TCP:** A dropped particle frame means the renderer shows the same frame for an extra 16ms which isn't a perceivable visual difference. TCP's retransmit and head-of-line blocking would stall the renderer waiting for a missed packet which is much worse for this usecase.
 
-**When SoA and when AoS:** Particle updates iterate over all x positions, then all y, then all z. A flattened SoA structure for the voxels and grid keeps each component contiguous in memory, maximising cache line utilisation. The vector that stores directions for each voxel stores the voxels in the same SoA order, but stores the directions for each voxel contiguously in a voxel-major structure, due to the current implementation of the physics looping through all directions of the same voxel together (similar to an AoSoA implementation). This structure can easily be changed to a direction-major implementation when the project is updated to use SIMD by editing the `directionIndex()` function which is used to interact with this data structure.
+**When SoA and when AoS:** Cell data is stored in flattened SoA form for cache-ordered spatial traversal. LBM distributions use a voxel-major `(cell × Q)` layout aligned loop access order in the physics engine, forming an implicit AoSoA pattern. The indexing is abstracted through `directionIndex()`, enabling a smooth future direction-major switch for SIMD without changes to simulation logic.
 
 **Why two buffer LBM:** In place collision + streaming would cause read-after-write 
 corruption. When streaming cell x=5, data from x=4 would be read which has already been 
