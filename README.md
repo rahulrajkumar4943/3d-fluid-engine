@@ -8,10 +8,13 @@ around a Porsche 911 GT2, with a decoupled UDP based visualization pipeline.
 
 The system is designed to explore real-time CFD visualization and distributed simulation patterns commonly found in high-performance and low-latency systems.
 
+
 <p align="center">
-  <a href="static/demo.mp4">
-    <img src="static/preview.png" width="2000"/>
-  </a>
+  <iframe width="900" height="506" src="https://www.youtube.com/embed/PttLgq1u-Sc"></iframe>
+</p>
+
+<p align="center">
+  <em>Real-time D3Q19 LBM simulation engine demo video</em>
 </p>
 
 
