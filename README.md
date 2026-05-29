@@ -10,7 +10,7 @@ The system is designed to explore real-time CFD visualization and distributed si
 
 <p align="center">
   <a href="static/demo.mp4">
-    <img src="static/preview.png" width="900"/>
+    <img src="static/preview.png" width="2000"/>
   </a>
 </p>
 
