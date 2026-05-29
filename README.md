@@ -10,7 +10,9 @@ The system is designed to explore real-time CFD visualization and distributed si
 
 
 <p align="center">
-  <iframe width="900" height="506" src="https://www.youtube.com/embed/PttLgq1u-Sc"></iframe>
+  <a href="https://youtu.be/PttLgq1u-Sc">
+    <img src="https://img.youtube.com/vi/PttLgq1u-Sc/maxresdefault.jpg" width="900" alt="3D Fluid Engine Demo">
+  </a>
 </p>
 
 <p align="center">
