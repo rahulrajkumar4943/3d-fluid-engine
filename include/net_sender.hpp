@@ -1,10 +1,12 @@
 #pragma once
+
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <unistd.h>
 #include <iostream>
 #include <vector>
+
 #include "net_protocol.hpp"
 #include "simulation_state.hpp"
 
@@ -39,6 +41,7 @@ class NetSender {
             particle_buffer_x.clear();
             particle_buffer_y.clear();
             particle_buffer_z.clear();
+            collect_buf_speed.clear();
 
             // config::NETWORK_DECIMATION is 4 so add every 4th particle
             for (int i = 0; i < state.tracerCount; i += config::NETWORK_DECIMATION) {
@@ -50,6 +53,12 @@ class NetSender {
                 particle_buffer_x.push_back(state.tracer_particles_x[i]);
                 particle_buffer_y.push_back(state.tracer_particles_y[i]);
                 particle_buffer_z.push_back(state.tracer_particles_z[i]);
+
+                // get particle speed and add to buffer
+                float vx = state.tracer_velocity_x[i];
+                float vy = state.tracer_velocity_y[i];
+                float vz = state.tracer_velocity_z[i];
+                collect_buf_speed.push_back(sqrtf(vx*vx + vy*vy + vz*vz));
             }
 
             // total is the number of particles to send
@@ -100,6 +109,9 @@ class NetSender {
                     packet.x[i] = quantize(particle_buffer_x[idx], config::WORLD_LENGTH_X);
                     packet.y[i] = quantize(particle_buffer_y[idx], config::WORLD_HEIGHT_Y);
                     packet.z[i] = quantize(particle_buffer_z[idx], config::WORLD_WIDTH_Z);
+                    // and quantize speed
+                    packet.speed[i] = quantize(collect_buf_speed[idx], config::QUANT_SPEED_MAX);
+
                 }
 
                 // send the packet
@@ -140,4 +152,5 @@ class NetSender {
         std::vector<float> particle_buffer_x;
         std::vector<float> particle_buffer_y;
         std::vector<float> particle_buffer_z;
+        std::vector<float> collect_buf_speed;
 };

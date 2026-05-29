@@ -42,6 +42,7 @@ int main() {
         const auto& px = receiver.get_px();
         const auto& py = receiver.get_py();
         const auto& pz = receiver.get_pz();
+        const auto& pspeed = receiver.get_pspeed();
 
         // count is the number of particles
         // size of px or tracer count whichever is smaller
@@ -52,10 +53,12 @@ int main() {
             state.tracer_particles_x[i] = px[i];
             state.tracer_particles_y[i] = py[i];
             state.tracer_particles_z[i] = pz[i];
+            state.tracer_speed[i] = pspeed[i];
         }
         // zero out the rest so render scene doesnt draw stale particles
         for (int i = count; i < state.tracerCount; i++) {
             state.tracer_particles_x[i] = 0.0f;
+            state.tracer_speed[i] = 0.0f;
         }
 
         renderer.renderScene(state);

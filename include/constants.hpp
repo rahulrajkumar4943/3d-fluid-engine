@@ -68,7 +68,9 @@ namespace config {
     constexpr int NETWORK_DECIMATION = 4;
     constexpr float QUANTIZE_RESOLUTION = 65535.0f; // largest value in uint16
     // 1200 particles per packet = 7200 bytes + 16 bytes of header
-    constexpr int NETWORK_PARTICLES_PER_PACKET = 1200;
+    constexpr int NETWORK_PARTICLES_PER_PACKET = 900;
+    constexpr int NETWORK_MEMORY_ALIGNMENT = 4;
+    constexpr float QUANT_SPEED_MAX = 20.0f;
     
 
 

@@ -1,4 +1,5 @@
 #pragma once
+
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -6,6 +7,7 @@
 #include <unistd.h>
 #include <iostream>
 #include <vector>
+
 #include "net_protocol.hpp"
 
 class NetReceiver {
@@ -71,6 +73,7 @@ class NetReceiver {
                         px.clear();
                         py.clear();
                         pz.clear();
+                        pspeed.clear();
                         batches_received = 0;
                         expected_batches = incoming.batch_total;
                     }
@@ -81,6 +84,7 @@ class NetReceiver {
                     px.push_back(dequantize(incoming.x[i], config::WORLD_LENGTH_X));
                     py.push_back(dequantize(incoming.y[i], config::WORLD_HEIGHT_Y));
                     pz.push_back(dequantize(incoming.z[i], config::WORLD_WIDTH_Z));
+                    pspeed.push_back(dequantize(incoming.speed[i], config::QUANT_SPEED_MAX));
                 }
 
                 batches_received++;
@@ -102,6 +106,9 @@ class NetReceiver {
         }
         const std::vector<float>& get_pz() const { 
             return pz; 
+        }
+        const std::vector<float>& get_pspeed() const { 
+            return pspeed; 
         }
 
         // more helper functions for renderer to know the state of the receiver
@@ -142,4 +149,5 @@ class NetReceiver {
         std::vector<float> px;
         std::vector<float> py;
         std::vector<float> pz;
+        std::vector<float> pspeed;
 };

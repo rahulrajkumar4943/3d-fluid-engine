@@ -37,7 +37,11 @@ inline float dequantize(uint16_t val, float max_val) {
 
 
 // 4 byte alignment for same memory layout on sender and receiber
-struct alignas(config::NETWORK_DECIMATION) SimPacket {
+struct alignas(config::NETWORK_MEMORY_ALIGNMENT) SimPacket {
+
+    
+
+
     uint32_t sequence;       // increase counter every network tick
     uint16_t batch_index;    // which batch within this tick or frame
     uint16_t batch_total;    // total batches in this frame so renderer konws when its done
@@ -47,4 +51,7 @@ struct alignas(config::NETWORK_DECIMATION) SimPacket {
     uint16_t x[config::NETWORK_PARTICLES_PER_PACKET];
     uint16_t y[config::NETWORK_PARTICLES_PER_PACKET];
     uint16_t z[config::NETWORK_PARTICLES_PER_PACKET];
+    uint16_t speed[config::NETWORK_PARTICLES_PER_PACKET];
 };
+
+static_assert(sizeof(SimPacket) <= 8000, "SimPacket size > 8000 bytes (safe UDP payload), reduce NETWORK_PARTICLES_PER_PACKET");

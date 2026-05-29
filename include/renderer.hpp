@@ -65,6 +65,25 @@ class Renderer {
 
         }
 
+        // get the colour to draw a particle based on its speed
+        Color velocityToColor(float speed, float min_speed, float max_speed) {
+            // std::cout << min_speed << "," << max_speed << "," << speed << std::endl;
+            // normalise speed zero to one
+            float normalized_speed = (speed - min_speed) / (max_speed - min_speed);
+            if (normalized_speed < 0.0f) {
+                normalized_speed = 0.0f;
+            }
+            if (normalized_speed > 1.0f) {
+                normalized_speed = 1.0f;
+            }
+
+            // slow is red fast is blue
+            unsigned char red_value = static_cast<unsigned char>((1.0f - normalized_speed) * 255);
+            unsigned char green_value = 0;
+            unsigned char blue_value = static_cast<unsigned char>(normalized_speed * 255);
+            return Color{red_value, green_value, blue_value, 255};
+        }
+
         // render hotpath (2 functions for the hotpath)
         // one for debugging and one for actual visuals
 
@@ -188,16 +207,59 @@ class Renderer {
             // draw the tracer particles
             // currently this draws each sphere individually which is slow
             // change this to do one draw command for all spheres
+
+
+            // find min and max speed this frame for normalization and colours
+
+            float min_speed = 1e9f;
+            float max_speed = 0.0f;
+            for (int i = 0; i < state.tracerCount; i++) {
+                // if particle is not active then ignore it
+                if (state.tracer_speed[i] <= 0.0f) {
+                    continue;
+                }
+
+                // get particle velocities
+                float vx = state.tracer_velocity_x[i];
+                float vy = state.tracer_velocity_y[i];
+                float vz = state.tracer_velocity_z[i];
+                // calc speed based on velocituy
+                float speed = state.tracer_speed[i];
+                if (speed < min_speed) {
+                    min_speed = speed;
+                }
+                if (speed > max_speed) {
+                    max_speed = speed;
+                }
+            }
+
+            // avoid division by zero
+            if (max_speed - min_speed < 1e-6f) {
+                max_speed = min_speed + 1e-6f;
+            }
+
+
+
             for (int i = 0; i < state.tracerCount; i++) {
                 // only draw active particles
                 if (state.tracer_particles_x[i] > 0.0f) {
+
+                        // calculalating speed twice here
+                        // prob faster to store speed somewhere in the initial calculations
+                        // when finding min and max
+                        // fixed above
+                        // float vx = state.tracer_velocity_x[i];
+                        // float vy = state.tracer_velocity_y[i];
+                        // float vz = state.tracer_velocity_z[i];
+                        float speed = state.tracer_speed[i];
+
                     Vector3 pos = {
                         state.tracer_particles_x[i],
                         state.tracer_particles_y[i],
                         state.tracer_particles_z[i]
                     };
 
-                    DrawPoint3D(pos, BLUE);
+                    DrawPoint3D(pos, velocityToColor(speed, min_speed, max_speed));
                 }
 
 

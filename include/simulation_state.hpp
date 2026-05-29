@@ -51,6 +51,7 @@ struct SimulationState {
     std::vector<float> tracer_velocity_x;
     std::vector<float> tracer_velocity_y;
     std::vector<float> tracer_velocity_z;
+    std::vector<float> tracer_speed;
 
     // spawn positions for tracer particles
     std::vector<float> tracer_spawn_x;
@@ -91,6 +92,7 @@ struct SimulationState {
         tracer_velocity_x.resize(config::MAX_PARTICLES, 0.0f);
         tracer_velocity_y.resize(config::MAX_PARTICLES, 0.0f);
         tracer_velocity_z.resize(config::MAX_PARTICLES, 0.0f);
+        tracer_speed.resize(config::MAX_PARTICLES, 0.0f);
 
         // tracer spawn location constructor. this only allocates space. 
         // there is a loop in spawn particles function in physics hpp that spawns the particles
