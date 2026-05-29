@@ -8,6 +8,13 @@ around a Porsche 911 GT2, with a decoupled UDP based visualization pipeline.
 
 The system is designed to explore real-time CFD visualization and distributed simulation patterns commonly found in high-performance and low-latency systems.
 
+<p align="center">
+  <a href="static/demo.mp4">
+    <img src="static/preview.png" width="900"/>
+  </a>
+</p>
+
+
 ## Architecture
 
 The system is split into two independent executables communicating over UDP, the engine process for the physics and the renderer process
