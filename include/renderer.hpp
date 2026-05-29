@@ -67,20 +67,43 @@ class Renderer {
 
         // get the colour to draw a particle based on its speed
         Color velocityToColor(float speed, float min_speed, float max_speed) {
-            // std::cout << min_speed << "," << max_speed << "," << speed << std::endl;
-            // normalise speed zero to one
+
+            // normalise speed to zero to one
             float normalized_speed = (speed - min_speed) / (max_speed - min_speed);
+
             if (normalized_speed < 0.0f) {
                 normalized_speed = 0.0f;
             }
+
             if (normalized_speed > 1.0f) {
                 normalized_speed = 1.0f;
             }
 
-            // slow is red fast is blue
-            unsigned char red_value = static_cast<unsigned char>((1.0f - normalized_speed) * 255);
+            unsigned char red_value = 0;
             unsigned char green_value = 0;
-            unsigned char blue_value = static_cast<unsigned char>(normalized_speed * 255);
+            unsigned char blue_value = 0;
+
+            // split into red to green and green to blue seperately
+            // red to green
+            if (normalized_speed < 0.5f) {
+
+                float rg_normal_speed = normalized_speed / 0.5f;
+
+                red_value   = static_cast<unsigned char>((1.0f - rg_normal_speed) * 255);
+                green_value = static_cast<unsigned char>(rg_normal_speed * 255);
+                blue_value  = 0;
+            }
+
+            // green to blue
+            else {
+
+                float gb_normal_speed = (normalized_speed - 0.5f) / 0.5f;
+
+                red_value   = 0;
+                green_value = static_cast<unsigned char>((1.0f - gb_normal_speed) * 255);
+                blue_value  = static_cast<unsigned char>(gb_normal_speed * 255);
+            }
+
             return Color{red_value, green_value, blue_value, 255};
         }
 
@@ -100,10 +123,10 @@ class Renderer {
 
             const float scale = 1.0f;
 
-            DrawCube({0, 0, 10}, 1, 1, 1, BLUE);   // +z marker // to make sure orientation is correct
-            DrawCubeWires({0, 0, 10}, 1, 1, 1, BLACK);
-            DrawCube({0, 0, -10}, 1, 1, 1, RED);   // -z marker // blue should be at the right when looking at it from inlet
-            DrawCubeWires({0, 0, -10}, 1, 1, 1, BLACK);
+            // DrawCube({0, 0, 10}, 1, 1, 1, BLUE);   // +z marker // to make sure orientation is correct
+            // DrawCubeWires({0, 0, 10}, 1, 1, 1, BLACK);
+            // DrawCube({0, 0, -10}, 1, 1, 1, RED);   // -z marker // blue should be at the right when looking at it from inlet
+            // DrawCubeWires({0, 0, -10}, 1, 1, 1, BLACK);
             // DrawCube({0, 0, 0}, 1, 1, 1, BLACK);   // 0 marker // black is in the middle origin point 
 
 
